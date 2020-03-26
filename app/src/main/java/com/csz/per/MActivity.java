@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.csz.permission.core.PermissionHelper;
 import com.csz.permission.core.ResultCallback;
 
-public class MainActivity extends AppCompatActivity {
+public class MActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +30,12 @@ public class MainActivity extends AppCompatActivity {
         PermissionHelper.simpleRequest(this, new ResultCallback() {
             @Override
             public void onFailure() {
-                Toast.makeText(MainActivity.this,"申请权限失败",Toast.LENGTH_LONG).show();
+                Toast.makeText(MActivity.this,"申请权限失败",Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onSuccess() {
-                Toast.makeText(MainActivity.this,"申请权限成功",Toast.LENGTH_LONG).show();
+                Toast.makeText(MActivity.this,"申请权限成功",Toast.LENGTH_LONG).show();
             }
         }, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
