@@ -212,15 +212,15 @@ public class PermissionHelper {
         }
         ISuccess success = RequestManager.removeSuccess(requestCode);
         IFailure failure = RequestManager.removeFailure(requestCode);
-        boolean allowed = checkGranted(grantResults);
-
+        String[] ungrantPermissions = checkGranted(permissions, grantResults);
+        boolean allowed = ungrantPermissions.length == 0;
         if (allowed) {
             if (success != null) {
                 success.onSuccess();
             }
         } else {
             if (failure != null) {
-                failure.onFailure();
+                failure.onFailure(ungrantPermissions);
             }
         }
         //因为onSuccess可能会重新调用权限请求，然后走到这步把后续的回调移除，所以保险起见，删除这两部
@@ -232,16 +232,16 @@ public class PermissionHelper {
 
     /**
      * 用户的授权结果
+     * @return 未申请的权限
      */
-    private static boolean checkGranted(int[] grantResults) {
-        boolean allowed = true;
-        for (int result : grantResults) {
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                allowed = false;
-                break;
+    private static String[] checkGranted(String[] permissions,int[] grantResults) {
+        List<String> per = new ArrayList<>();
+        for (int i = 0; i < grantResults.length; i++) {
+            if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {
+                per.add(permissions[i]);
             }
         }
-        return allowed;
+        return per.toArray(new String[0]);
     }
 
     /**

@@ -5,5 +5,5 @@ package com.csz.permission.core;
  */
 
 public interface IFailure {
-    void onFailure();
+    void onFailure(String[] permissions);
 }
