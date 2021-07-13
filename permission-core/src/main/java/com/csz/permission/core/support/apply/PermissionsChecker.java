@@ -207,15 +207,16 @@ public class PermissionsChecker {
      * @throws Exception
      */
     private static boolean checkWriteStorage(Activity activity) throws Exception {
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator +"check.tmp";
-        File file = new File(path, TAG);
+        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "check_1626170294794.txt";
+        File file = new File(path);
         if (!file.exists()) {
             boolean newFile;
             try {
-                if (file.getParentFile() != null && !file.getParentFile().exists() ){
+                if (file.getParentFile() != null && !file.getParentFile().exists()) {
                     file.getParentFile().mkdirs();
                 }
                 newFile = file.createNewFile();
+                file.delete();
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
