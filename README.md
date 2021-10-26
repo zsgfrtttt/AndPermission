@@ -13,7 +13,7 @@ allprojects {
 ```
 添加依赖
 dependencies {
-	        implementation 'com.github.zsgfrtttt:AndPermission:1.1.0'
+	        implementation 'com.github.zsgfrtttt:AndPermission:1.2.0'
 	}
 ```
 # 基本使用
