@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,6 +33,9 @@ public class MActivity extends AppCompatActivity {
         PermissionHelper.simpleRequest(this, new ResultCallback() {
             @Override
             public void onFailure(String[] ungrantPermissions) {
+                for (String permission : ungrantPermissions) {
+                    Log.i("csz","un per : "  + permission);
+                }
                 Toast.makeText(MActivity.this, Arrays.toString(ungrantPermissions), Toast.LENGTH_LONG).show();
             }
 
@@ -40,12 +44,13 @@ public class MActivity extends AppCompatActivity {
             public void onSuccess() {
                 Toast.makeText(MActivity.this, "success", Toast.LENGTH_LONG).show();
             }
-        }, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        }, /*Manifest.permission.WRITE_EXTERNAL_STORAGE,
            Manifest.permission.CALL_PHONE,
            Manifest.permission.CAMERA,
            Manifest.permission.READ_CONTACTS,
            Manifest.permission.ACCESS_COARSE_LOCATION,
-           Manifest.permission.ACCESS_FINE_LOCATION);
+           Manifest.permission.ACCESS_FINE_LOCATION*/
+                Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO);
     }
 
 }

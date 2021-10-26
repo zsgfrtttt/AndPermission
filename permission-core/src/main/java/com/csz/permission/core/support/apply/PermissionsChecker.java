@@ -32,6 +32,7 @@ import com.csz.permission.core.support.util.AudioRecordManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import static android.content.Context.SENSOR_SERVICE;
 import static android.content.Context.TELEPHONY_SERVICE;
@@ -127,10 +128,9 @@ public class PermissionsChecker {
     private static boolean checkRecordAudio(Activity activity) throws Exception {
         AudioRecordManager recordManager = new AudioRecordManager();
 
-        recordManager.startRecord(activity.getExternalFilesDir(Environment.DIRECTORY_RINGTONES) + "/" +
+        CountDownLatch countDownLatch = recordManager.startRecord(activity.getExternalFilesDir(Environment.DIRECTORY_RINGTONES) + "/" +
                 TAG + ".3gp");
-        recordManager.stopRecord();
-
+        recordManager.stopRecord(countDownLatch);
         return recordManager.getSuccess();
     }
 

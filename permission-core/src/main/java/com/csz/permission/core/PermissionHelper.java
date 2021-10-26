@@ -13,7 +13,9 @@ import com.csz.permission.core.support.PermissionsPageManager;
 import com.csz.permission.core.support.apply.PermissionsChecker;
 
 import java.lang.reflect.Method;
+import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import androidx.core.app.ActivityCompat;
@@ -84,7 +86,9 @@ public class PermissionHelper {
             //国产5.0-6.0
             if (ManufacturerSupportUtil.isUnderMNeedChecked(true)) {
                 //  requestPermission(requestBody.getActivity(), noGrantPermission, requestBody.getRequestCode());
-                PermissionHelper.onReqPermissionsResult(requestBody.getRequestCode(), requestBody.getPers(), new int[]{PackageManager.PERMISSION_DENIED});
+                int[] unGrants = new int[noGrantPermission.size()];
+                Arrays.fill(unGrants,PackageManager.PERMISSION_DENIED);
+                PermissionHelper.onReqPermissionsResult(requestBody.getRequestCode(), noGrantList.toArray(new String[0]), unGrants);
             } else {
                 //国产6.0及以上版本 及 被系统拒绝
                 requestPermission(requestBody.getActivity(), noGrantPermission, requestBody.getRequestCode());

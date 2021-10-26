@@ -3,11 +3,13 @@ package com.csz.permission.core.support.util;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Created by csz on 2017/8/17.
@@ -20,10 +22,15 @@ public class AudioRecordManager {
     private Thread recordThread;
     private boolean isStart = false;
     private int bufferSize;
-    /**
-     * record thread
-     */
-    Runnable recordRunnable = new Runnable() {
+
+    class RecordRunnable implements Runnable{
+
+        final CountDownLatch latch;
+
+        RecordRunnable(CountDownLatch latch) {
+            this.latch = latch;
+        }
+
         @Override
         public void run() {
             try {
@@ -31,6 +38,7 @@ public class AudioRecordManager {
                 int bytesRecord;
                 byte[] tempBuffer = new byte[bufferSize];
                 mRecorder.startRecording();
+
                 while (isStart) {
                     if (mRecorder != null) {
                         bytesRecord = mRecorder.read(tempBuffer, 0, bufferSize);
@@ -40,6 +48,7 @@ public class AudioRecordManager {
                         }
                         if (bytesRecord != 0 && bytesRecord != -1) {
                             dos.write(tempBuffer, 0, bytesRecord);
+                            break;
                         } else {
                             break;
                         }
@@ -47,10 +56,16 @@ public class AudioRecordManager {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+            } finally {
+                latch.countDown();
             }
         }
+    }
 
-    };
+    /**
+     * record thread
+     */
+    private RecordRunnable recordRunnable ;
     private long length;
 
     public AudioRecordManager() {
@@ -58,6 +73,7 @@ public class AudioRecordManager {
                 .ENCODING_PCM_16BIT);
         mRecorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 8000, AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT, bufferSize * 2);
+        Log.i("csz","AudioRecordManager");
     }
 
     public boolean getSuccess() {
@@ -89,12 +105,15 @@ public class AudioRecordManager {
     /**
      * start record thread
      */
-    private void startThread() {
+    private CountDownLatch startThread() {
         isStart = true;
+        CountDownLatch countDownLatch = new CountDownLatch(1);
         if (recordThread == null) {
+            recordRunnable = new RecordRunnable(countDownLatch);
             recordThread = new Thread(recordRunnable);
             recordThread.start();
         }
+        return countDownLatch;
     }
 
     /**
@@ -115,9 +134,9 @@ public class AudioRecordManager {
      * @param path
      * @throws IOException
      */
-    public void startRecord(String path) throws IOException, InterruptedException {
+    public CountDownLatch startRecord(String path) throws IOException, InterruptedException {
         setPath(path);
-        startThread();
+        return startThread();
     }
 
     /**
@@ -126,8 +145,9 @@ public class AudioRecordManager {
      * @throws IOException
      * @throws InterruptedException
      */
-    public void stopRecord() throws IOException, InterruptedException {
+    public void stopRecord(CountDownLatch countDownLatch) throws IOException, InterruptedException {
         // specially for OPPO、XIAOMI、MEIZU、HUAWEI and so on
+        countDownLatch.await();
         destroyThread();
         if (mRecorder != null) {
             if (mRecorder.getState() == AudioRecord.STATE_INITIALIZED) {

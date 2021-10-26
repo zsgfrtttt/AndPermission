@@ -2,6 +2,7 @@ package com.csz.permission.core;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -108,7 +109,6 @@ public class SmartPermission {
         boolean pass;
         List<String> noGrantList = PermissionHelper.getNoGrantPermissions(body);
         pass = noGrantList.isEmpty();
-
         if (pass) {
             if (mSuccess != null) {
                 mSuccess.onSuccess();
